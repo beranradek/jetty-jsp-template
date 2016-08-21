@@ -38,7 +38,7 @@ public class HttpServer {
     /**
      * Root of web application resources. That folder has to be just somewhere in classpath.
      */
-	private static final String WEB_APP_ROOT = "webapp";
+    private static final String WEB_APP_ROOT = "webapp";
 
     private static final int DEFAULT_PORT = 80;
 
@@ -142,7 +142,7 @@ public class HttpServer {
 
         context.addServlet(jspServletHolder(), "*.jsp");
 
-        configureApplication(context);
+        configureApplication(context, baseUri);
         return context;
     }
 
@@ -186,9 +186,9 @@ public class HttpServer {
      * Application specific configuration.
      * @param context
      */
-    private void configureApplication(WebAppContext context) {
+    private void configureApplication(WebAppContext context, URI baseUri) {
         // Add application servlets
-        registerApplicationServlets(context);
+        registerApplicationServlets(context, baseUri);
 
         // Add servlet filters
         registerApplicationFilters(context);
@@ -200,10 +200,10 @@ public class HttpServer {
 
     private void registerApplicationFilters(WebAppContext context) {
         FilterHolder staticCacheFilter = new FilterHolder(StaticResourceCacheFilter.class);
-        context.addFilter(staticCacheFilter, "/bootstrap/*,/javascripts/*,/styles/*", EnumSet.of(DispatcherType.REQUEST));
+        context.addFilter(staticCacheFilter, "/public/*,/bootstrap/*,/javascripts/*,/styles/*", EnumSet.of(DispatcherType.REQUEST));
     }
 
-    private void registerApplicationServlets(WebAppContext context) {
+    private void registerApplicationServlets(WebAppContext context, URI baseUri) {
         // Our compiled servlets are not under WEB-INF/classes or WEB-INF/lib,
         // so we need to scan annotated servlets ourselves:
         Reflections reflections = new Reflections(AbstractController.class.getPackage().getName());
@@ -213,10 +213,13 @@ public class HttpServer {
         // Lastly, the default servlet for root content (always needed, to satisfy servlet spec)
         // It is important that this is last.
         ServletHolder defaultJettyServlet = new ServletHolder("default", DefaultServlet.class);
+        defaultJettyServlet.setInitParameter("resourceBase", baseUri.toASCIIString());
+        defaultJettyServlet.setInitParameter("dirAllowed", "true");
         defaultJettyServlet.setInitParameter("acceptRanges", "true");
         defaultJettyServlet.setInitParameter("cacheControl", "max-age=604800,public");
         defaultJettyServlet.setInitOrder(1);
-        context.addServlet(defaultJettyServlet, "/");
+
+        context.addServlet(defaultJettyServlet, "/public/*");
     }
 
     private void registerAnnotatedServlets(ServletContextHandler context, Collection<Class<?>> types) throws IllegalArgumentException, SecurityException {

@@ -17,6 +17,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="${defaultTitle}" />
 	<title><c:choose><c:when test="${not empty param.title}">${param.title}</c:when><c:otherwise>${defaultTitle}</c:otherwise></c:choose></title>
+
+	<link rel="stylesheet" type="text/css" href="public/styles/main.css">
 	
 </head>
 <body>
