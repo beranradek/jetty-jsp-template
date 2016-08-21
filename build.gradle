@@ -1,0 +1,41 @@
+apply plugin: 'java' // for deployment with embedded server
+apply plugin: 'application' // for deployment with embedded server
+
+applicationName = "jetty-template"
+mainClassName = "my.site.HttpServer"
+
+version = '1.0.0'
+group = 'my.site'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    def slf4jVersion = '1.7.21';
+    def logbackVersion = '1.1.7';
+    def jettyVersion = '9.3.11.v20160721';
+    def servletVersion = '3.1.0';
+    
+    compile "org.eclipse.jetty:jetty-annotations:${jettyVersion}"
+    compile "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
+    
+    compile "org.eclipse.jetty:apache-jsp:${jettyVersion}"
+    compile "org.eclipse.jetty:apache-jstl:${jettyVersion}"
+    
+    compile "javax.servlet:javax.servlet-api:${servletVersion}"
+
+    compile "org.reflections:reflections:0.9.10"
+    
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile "org.slf4j:jul-to-slf4j:${slf4jVersion}"
+    runtime "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+    
+    runtime "ch.qos.logback:logback-classic:${logbackVersion}"
+    runtime "ch.qos.logback:logback-core:${logbackVersion}"
+}
+
+task stage(dependsOn: ['clean', 'installApp'])

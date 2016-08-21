@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: 
+Specification-Vendor: "Author"
+Specification-Title: "My Site" 
+Specification-Version: "1.0"
